@@ -1,0 +1,32 @@
+{
+  "name": "@2fd/graphtype",
+  "version": "0.1.0",
+  "description": "\"Generator of TypeScripts definitions for GraphQL\"",
+  "main": "index.js",
+  "bin": {
+    "graphtype": "./bin/graphtype.js"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2fd/graphtype.git"
+  },
+  "keywords": [
+    "typescript",
+    "graphql"
+  ],
+  "author": "Fede Ramirez <i@2fd.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/2fd/graphtype/issues"
+  },
+  "homepage": "https://github.com/2fd/graphtype#readme",
+  "dependencies": {
+    "@2fd/command": "^1.1.2",
+    "@types/request": "^0.0.39",
+    "request": "^2.79.0",
+    "word-wrap": "^1.2.0"
+  }
+}

@@ -1,0 +1,26 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "lib": [
+            "dom",
+            "es2015",
+            "es2016",
+            "es2017"
+        ],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "target": "es5",
+        "types": [
+            "node",
+            "mocha"
+        ],
+        "watch": false
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}
