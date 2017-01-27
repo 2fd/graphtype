@@ -32,6 +32,8 @@ type Output = OutputInterface;
 
 export class GraphTypeCommand extends Command<IFlags, IParams> {
 
+    description = 'Generator of TypeScripts definitions for GraphQL';
+
     params = new NoParams();
 
     flags = [
@@ -45,16 +47,16 @@ export class GraphTypeCommand extends Command<IFlags, IParams> {
             'HTTP querystring for request (use with --endpoint) ["token=cb8795e7"].'
         ),
         new ValueFlag('schemaFile', ['-s', '--schema'], 'Graphql Schema file ["./schema.json"].'),
-        new ValueFlag('output', ['-o', '--output'], 'Output directory.'),
+        new ValueFlag('output', ['-o', '--output'], 'Output file (otherwise write on stdout).'),
         new ListValueFlag(
             'scalarNumbers', ['-n', '--number-alias'],
-            'Scalars that must be represented as numbers ex:"UnsignedInt".'
+            'Scalars that must be represented as numbers ["UnsignedInt"].'
         ),
         new ListValueFlag(
             'scalarAlias', ['-a', '--alias'],
-            'Scalars that must be represented as alias of other types ex: "UnsignedInt=number".'
+            'Scalars that must be represented as alias of other types ["NumberOrString=number | string"].'
         ),
-        new BooleanFlag('version', ['-V', '--version'], 'Show graphdoc version.'),
+        new BooleanFlag('version', ['-V', '--version'], 'Show graphtypes version.'),
     ];
 
 
