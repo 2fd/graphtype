@@ -15,7 +15,7 @@ import { Introspection, Schema } from './interface';
 import { introspectionQuery } from './introspection';
 import { schemaToDefinition } from './typescript';
 
-interface IFlags {
+export interface IFlags {
     endpoint: string;
     headers: string[];
     queries: string[];
@@ -25,10 +25,9 @@ interface IFlags {
     output: string;
     version: boolean;
 };
-interface IParams { };
-type Input = InputInterface<IFlags, IParams>;
-type Output = OutputInterface;
-
+export interface IParams { };
+export type Input = InputInterface<IFlags, IParams>;
+export type Output = OutputInterface;
 
 export class GraphTypeCommand extends Command<IFlags, IParams> {
 
