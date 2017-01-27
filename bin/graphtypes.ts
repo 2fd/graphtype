@@ -1,7 +1,9 @@
-import {schemaToDefinition} from '../lib/typescript';
-const schema = require('../test/github.json');
+#!  /usr/bin/env node
+import {ArgvInput, ColorConsoleOutput} from '@2fd/command';
+import {GraphTypeCommand} from '../lib/command';
 
-
-console.log(
-    schemaToDefinition(schema.data.__schema)
-);
+(new GraphTypeCommand)
+    .handle(
+        new ArgvInput(process.argv),
+        new ColorConsoleOutput
+    );
