@@ -1,7 +1,17 @@
 import { EOL } from 'os';
 import { format } from 'util';
 import * as wrap from 'word-wrap';
-import { AsDefault, Deprecation, Description, EnumValue, Field, InputValue, Schema, SchemaType, TypeRef } from './interface';
+import {
+    AsDefault,
+    Deprecation,
+    Description,
+    EnumValue,
+    Field,
+    InputValue,
+    Schema,
+    SchemaType,
+    TypeRef,
+} from './interface';
 import { ENUM, INPUT_OBJECT, INTERFACE, LIST, NON_NULL, OBJECT, SCALAR, UNION } from './introspection';
 
 /**
@@ -120,7 +130,7 @@ function scalarToDefinition(type: TypeRef, typescriptAlias: string = 'string'): 
  * Field
  */
 export function fieldToDefinition(field: Field): string {
-    
+
     let def = [''];
     const assign = field.type.kind === NON_NULL ? ': ' : '?: ';
 
