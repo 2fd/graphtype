@@ -5,15 +5,26 @@ Generator of TypeScripts definitions for GraphQL
 
 ### TypeScripts definitions (.d.ts)
 
+* [Scalars](#scalars)
+* [Enums](#enums)
+* [Unions](#unions)
+* [Interfaces](#interfaces)
+* [Types](#types)
+* [Inputs](#inputs)
+
+
 #### Scalars
 
 ```graphql
+    # schema definitions
     scalar Boolean;
     scalar Int;
     scalar String;
 ```
 
 ```typescript
+    // typescript output
+    
     /**
      * Represents `true` or `false` values.
      */
@@ -35,6 +46,7 @@ Generator of TypeScripts definitions for GraphQL
 #### Enums
 
 ```graphql
+    # schema definitions
     enum __TypeKind {
         SCALAR
         OBJECT
@@ -48,6 +60,8 @@ Generator of TypeScripts definitions for GraphQL
 ```
 
 ```typescript
+    // typescript output
+    
     /**
      * An enum describing what kind of type a given `__Type` is.
      */
@@ -99,10 +113,13 @@ Generator of TypeScripts definitions for GraphQL
 #### Unions
 
 ```graphql
+    # schema definitions
     union ProjectCardItem = Issue | PullRequest;
 ```
 
 ```typescript
+    // typescript output
+    
     /**
      * Types that can be inside Project Cards.
      */
@@ -112,12 +129,15 @@ Generator of TypeScripts definitions for GraphQL
 #### Interfaces
 
 ```graphql
+    # schema definitions
     interface Node {
         id: ID!
     }
 ```
 
 ```typescript
+    // typescript output
+    
     /**
      * An application user.
      */
@@ -133,6 +153,7 @@ Generator of TypeScripts definitions for GraphQL
 #### Types
 
 ```graphql
+    # schema definitions
     type User implements Node {
         id: ID!
         email: String!
@@ -143,6 +164,8 @@ Generator of TypeScripts definitions for GraphQL
 ```
 
 ```typescript
+    // typescript output
+    
     /**
      * An application user.
      */
@@ -178,6 +201,7 @@ Generator of TypeScripts definitions for GraphQL
 #### Inputs
 
 ```graphql
+    # schema definitions
     input NewUser {
         email: String!
         name: String
@@ -187,6 +211,8 @@ Generator of TypeScripts definitions for GraphQL
 ```
 
 ```typescript
+    // typescript output
+    
     /**
      * An application user.
      */
