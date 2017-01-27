@@ -17,6 +17,7 @@ Generator of TypeScripts definitions for GraphQL
 
 ```graphql
     # schema definitions
+    
     scalar Boolean;
     scalar Int;
     scalar String;
@@ -47,6 +48,7 @@ Generator of TypeScripts definitions for GraphQL
 
 ```graphql
     # schema definitions
+    
     enum __TypeKind {
         SCALAR
         OBJECT
@@ -114,6 +116,7 @@ Generator of TypeScripts definitions for GraphQL
 
 ```graphql
     # schema definitions
+    
     union ProjectCardItem = Issue | PullRequest;
 ```
 
@@ -130,6 +133,7 @@ Generator of TypeScripts definitions for GraphQL
 
 ```graphql
     # schema definitions
+    
     interface Node {
         id: ID!
     }
@@ -154,6 +158,7 @@ Generator of TypeScripts definitions for GraphQL
 
 ```graphql
     # schema definitions
+    
     type User implements Node {
         id: ID!
         email: String!
@@ -202,6 +207,7 @@ Generator of TypeScripts definitions for GraphQL
 
 ```graphql
     # schema definitions
+    
     input NewUser {
         email: String!
         name: String
