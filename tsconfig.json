@@ -12,7 +12,7 @@
         "module": "commonjs",
         "moduleResolution": "node",
         "preserveConstEnums": true,
-        "sourceMap": true,
+        "sourceMap": false,
         "target": "es5",
         "types": [
             "node",
