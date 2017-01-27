@@ -4,7 +4,7 @@ Generator of TypeScripts definitions for GraphQL
 ## Install
 
 ```bash
-    npm install -g @2fd/graphtypes
+    npm install -g @2fd/graphtype
 ```
 
 ## Use
@@ -12,13 +12,13 @@ Generator of TypeScripts definitions for GraphQL
 ### Generate definitions from live endpoint
 
 ```bash
-    > graphtypes -e http://localhost:8080/graphql -o ./doc/schema.d.ts
+    > graphtype -e http://localhost:8080/graphql -o ./doc/schema.d.ts
 ```
 
 ### Generate definitions from json file
 
 ```bash
-    > graphtypes -s ./schema.json -o ./doc/schema.d.ts
+    > graphtype -s ./schema.json -o ./doc/schema.d.ts
 ```
 
 > `./schema.json` contains the result of [GraphQL introspection query](https://github.com/2fd/graphdoc/blob/gh-pages/introspection.graphql)
@@ -27,7 +27,7 @@ Generator of TypeScripts definitions for GraphQL
 ### Add scalars that must be represented as numbers
 
 ```bash
-    > graphtypes -e http://localhost:8080/graphql -n "UnsignedInt"
+    > graphtype -e http://localhost:8080/graphql -n "UnsignedInt"
 ```
 
 ```typescript
@@ -40,7 +40,7 @@ Generator of TypeScripts definitions for GraphQL
 ### Add scalars that must be represented as numbers
 
 ```bash
-    > graphtypes -e http://localhost:8080/graphql -n "UnsignedInt"
+    > graphtype -e http://localhost:8080/graphql -n "UnsignedInt"
 ```
 
 ```typescript
@@ -52,7 +52,7 @@ Generator of TypeScripts definitions for GraphQL
 ### Add scalars that must be represented as alias of other types
 
 ```bash
-    > graphtypes -e http://localhost:8080/graphql -s "NumberOrString=number | string"
+    > graphtype -e http://localhost:8080/graphql -s "NumberOrString=number | string"
 ```
 
 ```typescript
@@ -65,11 +65,11 @@ Generator of TypeScripts definitions for GraphQL
 
 ```bash
 
-    > graphtypes -h
+    > graphtype -h
 
     Generator of TypeScripts definitions for GraphQL v1.0.0
 
-    Usage: graphtypes [OPTIONS]
+    Usage: graphtype [OPTIONS]
 
      [OPTIONS]:
     -e, --endpoint        Graphql http endpoint ["https://domain.com/graphql"].
@@ -79,7 +79,7 @@ Generator of TypeScripts definitions for GraphQL
     -o, --output          Output file (otherwise write on stdout).
     -n, --number-alias    Scalars that must be represented as numbers ["UnsignedInt"].
     -a, --alias           Scalars that must be represented as alias of other types ["NumberOrString=number | string"].
-    -V, --version         Show graphtypes version.
+    -V, --version         Show graphtype version.
     -h, --help            Print this help
 
 ```

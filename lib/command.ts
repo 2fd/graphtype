@@ -55,7 +55,7 @@ export class GraphTypeCommand extends Command<IFlags, IParams> {
             'scalarAlias', ['-a', '--alias'],
             'Scalars that must be represented as alias of other types ["NumberOrString=number | string"].'
         ),
-        new BooleanFlag('version', ['-V', '--version'], 'Show graphtypes version.'),
+        new BooleanFlag('version', ['-V', '--version'], 'Show graphtype version.'),
     ];
 
 
