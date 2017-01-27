@@ -111,7 +111,7 @@ function scalarToDefinition(type: TypeRef, typescriptAlias: string = 'string'): 
     if (type.description)
         def.push(descriptionToComment(type));
 
-    def.push(format('type %s = %s;', type.name, typescriptAlias));
+    def.push(format('export type %s = %s;', type.name, typescriptAlias));
 
     return def.join(EOL);
 }
@@ -120,15 +120,15 @@ function scalarToDefinition(type: TypeRef, typescriptAlias: string = 'string'): 
  * Field
  */
 export function fieldToDefinition(field: Field): string {
-    let def = [
-        ''
-    ];
+    
+    let def = [''];
+    const assign = field.type.kind === NON_NULL ? ': ' : '?: ';
 
     if (field.description || field.isDeprecated) {
         def.push(descriptionToComment(field, TAB));
     }
 
-    def.push(TAB + field.name + ': ' + refToDefinition(field.type) + ';');
+    def.push(TAB + field.name + assign + refToDefinition(field.type) + ';');
 
     return def.join(EOL);
 }
@@ -149,7 +149,7 @@ export function typeToDefinition(type: SchemaType): string {
     const impl = type.interfaces.length > 0 ?
         ' extends ' + type.interfaces.map(inter => inter.name).join(', ') : '';
 
-    const def = [];
+    let def = [];
 
     if (type.description)
         def.push(descriptionToComment(type));
@@ -166,7 +166,7 @@ export function typeToDefinition(type: SchemaType): string {
  */
 export function interfaceToDefinition(type: SchemaType): string {
 
-    const def = [];
+    let def = [];
 
     if (type.description)
         def.push(descriptionToComment(type));
@@ -184,11 +184,12 @@ export function interfaceToDefinition(type: SchemaType): string {
 export function inputValueToDefinition(arg: InputValue): string {
 
     let def = [''];
+    const assign = arg.type.kind === NON_NULL ? ': ' : '?: ';
 
     if (arg.description)
         def.push(descriptionToComment(arg, TAB));
 
-    def.push(TAB + arg.name + ': ' + refToDefinition(arg.type) + ';');
+    def.push(TAB + arg.name + assign + refToDefinition(arg.type) + ';');
 
     return def.join(EOL);
 }
@@ -206,7 +207,7 @@ export function inputValuesToDefinition(args: InputValue[]): string {
  */
 export function inputToDefinition(type: SchemaType): string {
 
-    const def = [];
+    let def = [];
 
     if (type.description)
         def.push(descriptionToComment(type));
@@ -223,11 +224,18 @@ export function inputToDefinition(type: SchemaType): string {
  */
 export function unionToDefinition(type: SchemaType): string {
 
-    return format(
+    let def = [];
+
+    if (type.description)
+        def.push(descriptionToComment(type));
+
+    def.push(format(
         'export type %s = %s;',
         type.name,
         type.possibleTypes.map((possibleType) => possibleType.name).join(' | ')
-    );
+    ));
+
+    return def.join(EOL);
 }
 
 /**
@@ -270,7 +278,14 @@ export function enumToDefinition(type: SchemaType): string {
     return def.join(EOL);
 }
 
-
+enum TypeOrder {
+    SCALAR,
+    ENUM,
+    UNION,
+    INTERFACE,
+    OBJECT,
+    INPUT_OBJECT,
+}
 /**
  * GraphQL schema to Typescript definition
  */
@@ -284,58 +299,79 @@ export function schemaToDefinition(schema: Schema, scalarAlias: { [name: string]
     });
 
     let def = [];
-    let schemaDef = [];
-    schemaDef.push('export interface Schema {');
+    let response = [];
+    let responseTypes = [];
 
-    if (schema.queryType) {
-        schemaDef.push('');
-        schemaDef.push(descriptionToComment(schema.queryType));
-        schemaDef.push(TAB + 'query: ' + schema.queryType.name);
-    }
+    if (schema.queryType)
+        responseTypes.push(schema.queryType.name);
 
-    if (schema.mutationType) {
-        schemaDef.push('');
-        schemaDef.push(descriptionToComment(schema.mutationType));
-        schemaDef.push(TAB + 'mutation: ' + schema.mutationType.name);
-    }
+    if (schema.mutationType)
+        responseTypes.push(schema.mutationType.name);
 
-    if (schema.subscriptionType) {
-        schemaDef.push('');
-        schemaDef.push(descriptionToComment(schema.subscriptionType));
-        schemaDef.push(TAB + 'subscription: ' + schema.subscriptionType.name);
-    }
-    schemaDef.push('}');
+    if (schema.subscriptionType)
+        responseTypes.push(schema.subscriptionType.name);
+
+    response.push('export interface Response {');
+    response.push('');
+    response.push(TAB + 'data: ' + responseTypes.join(' | ') + ' | null;');
+    response.push('');
+    response.push(TAB + 'errors?: ErrorResponse[];');
+    response.push('}');
+
+    response.push('');
+    response.push('export interface ErrorResponse {');
+    response.push('');
+    response.push(TAB + 'locations: ErrorLocation[];');
+    response.push('');
+    response.push(TAB + 'message: string;');
+    response.push('}');
+
+    response.push('');
+    response.push('export interface ErrorLocation {');
+    response.push('');
+    response.push(TAB + 'line: number;');
+    response.push('');
+    response.push(TAB + 'column: number;');
+    response.push('}');
 
     def.push(utilDefinition());
-    def.push(schemaDef.join(EOL));
-    schema.types.forEach((type: SchemaType) => {
+    def.push(response.join(EOL));
+    schema.types
+        .sort((typeA: SchemaType, typeB: SchemaType) => {
 
-        if (type) {
-            switch (type.kind) {
+            if (typeA.kind === typeB.kind)
+                return typeA.name.localeCompare(typeB.name);
 
-                case SCALAR:
-                    return def.push(scalarToDefinition(type, scalarAlias[type.name]));
+            return (TypeOrder[typeA.kind] as any) - (TypeOrder[typeB.kind] as any);
+        })
+        .forEach((type: SchemaType) => {
 
-                case OBJECT:
-                    return def.push(typeToDefinition(type));
+            if (type) {
+                switch (type.kind) {
 
-                case INTERFACE:
-                    return def.push(interfaceToDefinition(type));
+                    case SCALAR:
+                        return def.push(scalarToDefinition(type, scalarAlias[type.name]));
 
-                case UNION:
-                    return def.push(unionToDefinition(type));
+                    case ENUM:
+                        return def.push(enumToDefinition(type));
 
-                case INPUT_OBJECT:
-                    return def.push(inputToDefinition(type));
+                    case UNION:
+                        return def.push(unionToDefinition(type));
 
-                case ENUM:
-                    return def.push(enumToDefinition(type));
+                    case INTERFACE:
+                        return def.push(interfaceToDefinition(type));
 
-                default:
-                    throw new Error('Unexpected type: ' + type.kind);
+                    case OBJECT:
+                        return def.push(typeToDefinition(type));
+
+                    case INPUT_OBJECT:
+                        return def.push(inputToDefinition(type));
+
+                    default:
+                        throw new Error('Unexpected type: ' + type.kind);
+                }
             }
-        }
-    });
+        });
 
     return def.join(EOL + EOL);
 }
