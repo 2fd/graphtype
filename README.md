@@ -1,6 +1,89 @@
 # graphtype
 Generator of TypeScripts definitions for GraphQL
 
+## Install
+
+```bash
+    npm install -g @2fd/graphtype
+```
+
+## Use
+
+### Generate definitions from live endpoint
+
+```bash
+    > graphtype -e http://localhost:8080/graphql -o ./doc/schema.d.ts
+```
+
+### Generate definitions from json file
+
+```bash
+    > graphtype -s ./schema.json -o ./doc/schema.d.ts
+```
+
+> `./schema.json` contains the result of [GraphQL introspection query](https://github.com/2fd/graphdoc/blob/gh-pages/introspection.graphql)
+
+
+### Add scalars that must be represented as numbers
+
+```bash
+    > graphtype -e http://localhost:8080/graphql -n "UnsignedInt"
+```
+
+```typescript
+    /**
+     * Represents `true` or `false` values.
+     */
+    export type UnsignedInt = number;
+```
+
+### Add scalars that must be represented as numbers
+
+```bash
+    > graphtype -e http://localhost:8080/graphql -n "UnsignedInt"
+```
+
+```typescript
+    // ...
+    export type UnsignedInt = number;
+    // ...
+```
+
+### Add scalars that must be represented as alias of other types
+
+```bash
+    > graphtype -e http://localhost:8080/graphql -s "NumberOrString=number | string"
+```
+
+```typescript
+    // ...
+    export type NumberOrString = number | string;
+    // ...
+```
+
+### Help
+
+```bash
+
+    > graphtype -h
+
+    Generator of TypeScripts definitions for GraphQL v1.0.0
+
+    Usage: graphtype [OPTIONS]
+
+     [OPTIONS]:
+    -e, --endpoint        Graphql http endpoint ["https://domain.com/graphql"].
+    -x, --header          HTTP header for request (use with --endpoint). ["Authorization: Token cb8795e7"].
+    -q, --query           HTTP querystring for request (use with --endpoint) ["token=cb8795e7"].
+    -s, --schema          Graphql Schema file ["./schema.json"].
+    -o, --output          Output file (otherwise write on stdout).
+    -n, --number-alias    Scalars that must be represented as numbers ["UnsignedInt"].
+    -a, --alias           Scalars that must be represented as alias of other types ["NumberOrString=number | string"].
+    -V, --version         Show graphtype version.
+    -h, --help            Print this help
+
+```
+
 ## Translations
 
 ### TypeScripts definitions (.d.ts)
@@ -17,7 +100,7 @@ Generator of TypeScripts definitions for GraphQL
 
 ```graphql
     # schema definitions
-    
+
     scalar Boolean;
     scalar Int;
     scalar String;
@@ -25,20 +108,20 @@ Generator of TypeScripts definitions for GraphQL
 
 ```typescript
     // typescript output
-    
+
     /**
      * Represents `true` or `false` values.
      */
     export type Boolean = boolean;
 
     /**
-     * Represents non-fractional signed whole numeric values. Int can represent values 
+     * Represents non-fractional signed whole numeric values. Int can represent values
      * between -(2^31) and 2^31 - 1.
      */
     export type Int = number;
 
     /**
-     * Represents textual data as UTF-8 character sequences. This type is most often 
+     * Represents textual data as UTF-8 character sequences. This type is most often
      * used by GraphQL to represent free-form human-readable text.
      */
     export type String = string;
@@ -48,7 +131,7 @@ Generator of TypeScripts definitions for GraphQL
 
 ```graphql
     # schema definitions
-    
+
     enum __TypeKind {
         SCALAR
         OBJECT
@@ -63,7 +146,7 @@ Generator of TypeScripts definitions for GraphQL
 
 ```typescript
     // typescript output
-    
+
     /**
      * An enum describing what kind of type a given `__Type` is.
      */
@@ -80,7 +163,7 @@ Generator of TypeScripts definitions for GraphQL
         "OBJECT" |
 
         /**
-         * Indicates this type is an interface. `fields` and `possibleTypes` are valid 
+         * Indicates this type is an interface. `fields` and `possibleTypes` are valid
          * fields.
          */
         "INTERFACE" |
@@ -116,13 +199,13 @@ Generator of TypeScripts definitions for GraphQL
 
 ```graphql
     # schema definitions
-    
+
     union ProjectCardItem = Issue | PullRequest;
 ```
 
 ```typescript
     // typescript output
-    
+
     /**
      * Types that can be inside Project Cards.
      */
@@ -133,7 +216,7 @@ Generator of TypeScripts definitions for GraphQL
 
 ```graphql
     # schema definitions
-    
+
     interface Node {
         id: ID!
     }
@@ -141,7 +224,7 @@ Generator of TypeScripts definitions for GraphQL
 
 ```typescript
     // typescript output
-    
+
     /**
      * An application user.
      */
@@ -158,7 +241,7 @@ Generator of TypeScripts definitions for GraphQL
 
 ```graphql
     # schema definitions
-    
+
     type User implements Node {
         id: ID!
         email: String!
@@ -170,7 +253,7 @@ Generator of TypeScripts definitions for GraphQL
 
 ```typescript
     // typescript output
-    
+
     /**
      * An application user.
      */
@@ -207,7 +290,7 @@ Generator of TypeScripts definitions for GraphQL
 
 ```graphql
     # schema definitions
-    
+
     input NewUser {
         email: String!
         name: String
@@ -218,7 +301,7 @@ Generator of TypeScripts definitions for GraphQL
 
 ```typescript
     // typescript output
-    
+
     /**
      * An application user.
      */

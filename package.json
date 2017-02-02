@@ -1,6 +1,6 @@
 {
   "name": "@2fd/graphtype",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "description": "\"Generator of TypeScripts definitions for GraphQL\"",
   "main": "index.js",
   "bin": {
