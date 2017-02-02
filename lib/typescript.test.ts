@@ -39,5 +39,5 @@ export interface AddCommentInput {
 
 test('Generate ' + inputDefinition.kind + ' definition', () => {
     expect(inputToDefinition(inputDefinition))
-        .toBe(inputExpected;
+        .toBe(inputExpected);
 });
