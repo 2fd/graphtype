@@ -1,3 +1,6 @@
+import { Introspection, Schema } from './interface';
+import { introspectionQuery } from './introspection';
+import { createReadableSchemaDefinition } from './typescript';
 import {
     BooleanFlag,
     Command,
@@ -11,9 +14,6 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import * as request from 'request';
-import { Introspection, Schema } from './interface';
-import { introspectionQuery } from './introspection';
-import { schemaToDefinition } from './typescript';
 
 export interface IFlags {
     endpoint: string;
@@ -66,14 +66,20 @@ export class GraphTypeCommand extends Command<IFlags, IParams> {
             this.getSchema(input),
             this.getAlias(input),
         ])
-            .then(([stream, schema, alias]: [NodeJS.WritableStream, Schema, any]) => {
-                return this.writeTo(stream, schema, alias);
+            .then(([out, schema, alias]: [NodeJS.WritableStream, Schema, any]) => {
+                return new Promise<NodeJS.WritableStream>((resolve, reject) => {
+                    const readable = createReadableSchemaDefinition(schema, alias);
+                    readable.on('error', reject);
+                    readable.on('end', () => resolve(out));
+                    readable.pipe(out);
+                });
             })
-            .then((stream) => {
-                if (stream !== process.stdout)
-                    stream.end();
+            .then((out) => {
+                if (out !== process.stdout)
+                    out.end();
+
+                process.exit(0);
             })
-            .then(() => process.exit(0))
             .catch(err => {
                 output.error('');
                 output.error('%c %s', 'color:red', err.message);
@@ -82,15 +88,6 @@ export class GraphTypeCommand extends Command<IFlags, IParams> {
                 output.error('');
                 process.exit(1);
             });
-
-    }
-
-    writeTo(output: NodeJS.WritableStream, schema: Schema, alias: any = {}): Promise<NodeJS.WritableStream> {
-
-        return new Promise((resolve, reject) => {
-            output.on('error', reject);
-            output.write(schemaToDefinition(schema, alias) + os.EOL, () => resolve(output));
-        });
     }
 
     getAlias(input: Input) {

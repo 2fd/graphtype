@@ -1,6 +1,3 @@
-import { EOL } from 'os';
-import { format } from 'util';
-import * as wrap from 'word-wrap';
 import {
     AsDefault,
     Deprecation,
@@ -12,7 +9,20 @@ import {
     SchemaType,
     TypeRef,
 } from './interface';
-import { ENUM, INPUT_OBJECT, INTERFACE, LIST, NON_NULL, OBJECT, SCALAR, UNION } from './introspection';
+import {
+    ENUM,
+    INPUT_OBJECT,
+    INTERFACE,
+    LIST,
+    NON_NULL,
+    OBJECT,
+    SCALAR,
+    UNION
+} from './introspection';
+import { EOL } from 'os';
+import { format } from 'util';
+import { Readable } from 'stream';
+import * as wrap from 'word-wrap';
 
 /**
  * Utility
@@ -43,6 +53,35 @@ function utilDefinition() {
         'type List<T> = T[];',
         'type Optional<T> = T | null;',
     ].join(EOL);
+}
+
+function responseDefinition(responseTypes: string[]) {
+
+    let responseDef = [];
+    responseDef.push('export interface Response {');
+    responseDef.push('');
+    responseDef.push(TAB + 'data: ' + responseTypes.join(' | ') + ';');
+    responseDef.push('');
+    responseDef.push(TAB + 'errors?: ErrorResponse[];');
+    responseDef.push('}');
+
+    responseDef.push('');
+    responseDef.push('export interface ErrorResponse {');
+    responseDef.push('');
+    responseDef.push(TAB + 'locations: ErrorLocation[];');
+    responseDef.push('');
+    responseDef.push(TAB + 'message: string;');
+    responseDef.push('}');
+
+    responseDef.push('');
+    responseDef.push('export interface ErrorLocation {');
+    responseDef.push('');
+    responseDef.push(TAB + 'line: number;');
+    responseDef.push('');
+    responseDef.push(TAB + 'column: number;');
+    responseDef.push('}');
+
+    return responseDef.join(EOL);
 }
 
 /**
@@ -296,11 +335,91 @@ enum TypeOrder {
     OBJECT,
     INPUT_OBJECT,
 }
+
 /**
  * GraphQL schema to Typescript definition
  */
-export function schemaToDefinition(schema: Schema, scalarAlias: { [name: string]: string } = {}): string {
+export function schemaToDefinition(
+    schema: Schema,
+    scalarAlias: { [name: string]: string } = {}
+): string {
 
+    let queue = createSchemaDefinitionQueue(schema, scalarAlias);
+
+    return queue
+        .map(task => task())
+        .join(EOL + EOL) + EOL + EOL;
+}
+
+class ReadableFromQueue extends Readable {
+    constructor(public queue: (() => string)[]) {
+        super({});
+    }
+
+    _read() {
+
+        let isPaused = false;
+        while (!isPaused && this.queue.length > 0) {
+
+            const task = this.queue.shift();
+            const out = task() + EOL + EOL;
+
+            isPaused = this.push(out);
+        }
+
+        if (!isPaused)
+            this.push(null);
+    }
+}
+
+/**
+ * GraphQL schema to Typescript definition
+ */
+export function createReadableSchemaDefinition(
+    schema: Schema,
+    scalarAlias: { [name: string]: string } = {}
+): Readable {
+    let queue = createSchemaDefinitionQueue(schema, scalarAlias);
+    return new ReadableFromQueue(queue);
+}
+
+
+/**
+ * GraphQL schema to Typescript definition
+ */
+export function createPromiseSchemaDefinition(
+    schema: Schema,
+    scalarAlias: { [name: string]: string } = {}
+): Promise<string> {
+    let queue = createSchemaDefinitionQueue(schema, scalarAlias);
+    return new Promise((resolve, reject) => {
+        let buff: string = '';
+        let next = function () {
+
+            if (queue.length === 0) {
+                return resolve(buff);
+            } else {
+                try {
+                    const task = queue.shift();
+                    buff += task() + EOL + EOL;
+                    process.nextTick(next);
+                } catch (err) {
+                    reject(err);
+                }
+            }
+        };
+    });
+}
+
+/**
+ * GraphQL schema to Typescript definition
+ */
+export function createSchemaDefinitionQueue(
+    schema: Schema,
+    scalarAlias: { [name: string]: string } = {}
+): (() => string)[] {
+
+    // Add standard alias for scalars
     scalarAlias = Object.assign({}, scalarAlias, {
         Boolean: 'boolean',
         Int: 'number',
@@ -308,8 +427,7 @@ export function schemaToDefinition(schema: Schema, scalarAlias: { [name: string]
         String: 'string',
     });
 
-    let def = [];
-    let response = [];
+    // Determine possible return values
     let responseTypes = [];
 
     if (schema.queryType)
@@ -321,31 +439,12 @@ export function schemaToDefinition(schema: Schema, scalarAlias: { [name: string]
     if (schema.subscriptionType)
         responseTypes.push(schema.subscriptionType.name);
 
-    response.push('export interface Response {');
-    response.push('');
-    response.push(TAB + 'data: ' + responseTypes.join(' | ') + ' | null;');
-    response.push('');
-    response.push(TAB + 'errors?: ErrorResponse[];');
-    response.push('}');
+    responseTypes.push('null');
 
-    response.push('');
-    response.push('export interface ErrorResponse {');
-    response.push('');
-    response.push(TAB + 'locations: ErrorLocation[];');
-    response.push('');
-    response.push(TAB + 'message: string;');
-    response.push('}');
-
-    response.push('');
-    response.push('export interface ErrorLocation {');
-    response.push('');
-    response.push(TAB + 'line: number;');
-    response.push('');
-    response.push(TAB + 'column: number;');
-    response.push('}');
-
-    def.push(utilDefinition());
-    def.push(response.join(EOL));
+    // Begin definotion queue
+    let schemaDef: (() => string)[] = [];
+    schemaDef.push(() => utilDefinition());
+    schemaDef.push(() => responseDefinition(responseTypes));
     schema.types
         .sort((typeA: SchemaType, typeB: SchemaType) => {
 
@@ -360,22 +459,22 @@ export function schemaToDefinition(schema: Schema, scalarAlias: { [name: string]
                 switch (type.kind) {
 
                     case SCALAR:
-                        return def.push(scalarToDefinition(type, scalarAlias[type.name]));
+                        return schemaDef.push(() => scalarToDefinition(type, scalarAlias[type.name]));
 
                     case ENUM:
-                        return def.push(enumToDefinition(type));
+                        return schemaDef.push(() => enumToDefinition(type));
 
                     case UNION:
-                        return def.push(unionToDefinition(type));
+                        return schemaDef.push(() => unionToDefinition(type));
 
                     case INTERFACE:
-                        return def.push(interfaceToDefinition(type));
+                        return schemaDef.push(() => interfaceToDefinition(type));
 
                     case OBJECT:
-                        return def.push(typeToDefinition(type));
+                        return schemaDef.push(() => typeToDefinition(type));
 
                     case INPUT_OBJECT:
-                        return def.push(inputToDefinition(type));
+                        return schemaDef.push(() => inputToDefinition(type));
 
                     default:
                         throw new Error('Unexpected type: ' + type.kind);
@@ -383,5 +482,5 @@ export function schemaToDefinition(schema: Schema, scalarAlias: { [name: string]
             }
         });
 
-    return def.join(EOL + EOL);
+    return schemaDef;
 }
