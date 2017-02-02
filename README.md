@@ -130,6 +130,8 @@ Generator of TypeScripts definitions for GraphQL
     export type String = string;
 ```
 
+![Autocomplete Scalars on Typescript](https://github.com/2fd/graphtype/raw/master/img/typescript.scalar.png)
+
 #### Enums
 
 ```graphql
@@ -198,6 +200,8 @@ Generator of TypeScripts definitions for GraphQL
     );
 ```
 
+![Autocomplete Enums on Typescript](https://github.com/2fd/graphtype/raw/master/img/typescript.enum.png)
+
 #### Unions
 
 ```graphql
@@ -214,6 +218,8 @@ Generator of TypeScripts definitions for GraphQL
      */
     export type ProjectCardItem = Issue | PullRequest;
 ```
+
+![Autocomplete Enums on Typescript](https://github.com/2fd/graphtype/raw/master/img/typescript.union.png)
 
 #### Interfaces
 
@@ -239,6 +245,8 @@ Generator of TypeScripts definitions for GraphQL
         id: NonNull<ID>;
     }
 ```
+
+![Autocomplete Enums on Typescript](https://github.com/2fd/graphtype/raw/master/img/typescript.interface.png)
 
 #### Types
 
@@ -289,6 +297,8 @@ Generator of TypeScripts definitions for GraphQL
     }
 ```
 
+![Autocomplete Objects on Typescript](https://github.com/2fd/graphtype/raw/master/img/typescript.type.png)
+
 #### Inputs
 
 ```graphql
@@ -333,3 +343,5 @@ Generator of TypeScripts definitions for GraphQL
         friends?: Optional<List<NonNull<ID>>>;
     }
 ```
+
+![Autocomplete Inputs on Typescript](https://github.com/2fd/graphtype/raw/master/img/typescript.input.png)
