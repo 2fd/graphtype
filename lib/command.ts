@@ -11,7 +11,6 @@ import {
     ValueFlag,
 } from '@2fd/command';
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 import * as request from 'request';
 
@@ -161,6 +160,5 @@ export class GraphTypeCommand extends Command<IFlags, IParams> {
                 new Error('Endpoint (--endpoint, -e) or Schema File (--schema, -s) are require.')
             );
         }
-
     }
 }
