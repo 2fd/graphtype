@@ -1,4 +1,7 @@
 # graphtype
+
+[![Build Status](https://travis-ci.org/2fd/graphtype.svg?branch=master)](https://travis-ci.org/2fd/graphtype)
+
 Generator of TypeScripts definitions for GraphQL
 
 ## Install
