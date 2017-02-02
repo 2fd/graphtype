@@ -25,10 +25,14 @@
   "homepage": "https://github.com/2fd/graphtype#readme",
   "dependencies": {
     "@2fd/command": "^1.1.2",
-    "@types/mocha": "^2.2.38",
-    "@types/node": "^7.0.4",
-    "@types/request": "^0.0.39",
     "request": "^2.79.0",
     "word-wrap": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^18.1.1",
+    "@types/node": "^7.0.4",
+    "@types/request": "^0.0.39",
+    "jest": "^18.1.0",
+    "typescript": "^2.1.5"
   }
 }

@@ -1,4 +1,4 @@
-# graphschema
+# graphtype
 Generator of TypeScripts definitions for GraphQL
 
 ## Translations
