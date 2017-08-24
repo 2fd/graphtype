@@ -8,5 +8,6 @@ install:
   - npm install
   - npm run compile
   - npm prune --production
+  - npm install jest
 before_script:
   - node ./bin/graphtype.js -s ./test/github.json -o ./test/github.graphql
