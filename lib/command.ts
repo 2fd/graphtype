@@ -1,6 +1,7 @@
-import { Introspection, Schema } from './interface';
-import { introspectionQuery } from './introspection';
-import { createReadableSchemaDefinition } from './typescript';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as request from 'request';
+
 import {
     BooleanFlag,
     Command,
@@ -10,9 +11,10 @@ import {
     OutputInterface,
     ValueFlag,
 } from '@2fd/command';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as request from 'request';
+import { Introspection, Schema } from './interface';
+
+import { createReadableSchemaDefinition } from './typescript';
+import { introspectionQuery } from './introspection';
 
 export interface IFlags {
     endpoint: string;
@@ -148,7 +150,7 @@ export class GraphTypeCommand extends Command<IFlags, IParams> {
                 const [name, value] = query.split('=', 2);
                 result[name] = value;
                 return result;
-            });
+            }, {});
 
             return new Promise((resolve, reject) => {
                 request(options, (err, _, introspection: Introspection) => err ?
