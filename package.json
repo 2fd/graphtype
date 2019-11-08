@@ -27,7 +27,7 @@
   "dependencies": {
     "@2fd/command": "^1.1.2",
     "request": "^2.79.0",
-    "word-wrap": "^1.2.0"
+    "word-wrap": "^1.2.3"
   },
   "devDependencies": {
     "@types/jest": "^18.1.1",
